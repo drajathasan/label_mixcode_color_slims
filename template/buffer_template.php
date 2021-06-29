@@ -28,6 +28,7 @@ $js = (ENVIRONMENT === 'development') ? '.js' : '.min.js';
         <script src="<?= $assetPath . '/assets/js/vue' . $js?>"></script>
         <script src="<?= $assetPath . '/assets/js/JsBarcode.all.min.js'?>"></script>
         <script src="<?= $assetPath . '/assets/js/qrcode.min.js'?>"></script>
+        <script src="<?= $assetPath . '/assets/js/vanilla-picker.min.js'?>"></script>
         <script type="module" src="<?= $assetPath . '/assets/js/app.js?ver='.date('this')?>"></script>
     </body>
 </html>

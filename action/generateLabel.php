@@ -1,4 +1,11 @@
 <?php
+/**
+ * @author Drajat Hasan
+ * @email drajathasan20@gmail.com
+ * @create date 2021-06-29 08:15:59
+ * @modify date 2021-06-29 08:15:59
+ * @desc [description]
+ */
 
 isDirect();
 
@@ -17,6 +24,8 @@ if (isset($_GET['action']) AND $_GET['action'] == 'print') {
   $globalSettings = $sysconf['lbc_settings'];
   // set settings per Template
   $settingsTemplate = $sysconf['lbc_' . $globalSettings['template'] . 'Code'];
+  // color pallet
+  $palletColor = $sysconf['lbc_color'];
   // set Template dir
   $templateDir = __DIR__.'/../template/'.$globalSettings['template'] . 'Code_template.php';
 

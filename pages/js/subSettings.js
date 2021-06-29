@@ -1,5 +1,5 @@
 const temp = `
-    <div>
+    <div class="mb-32">
         <div class="flex flex-wrap" v-for="field,index in decodeFields(fields)">
             <div class="w-2/12 p-5 font-bold text-gray-800 text-sm">
                 {{ field.label }}

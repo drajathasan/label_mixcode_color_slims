@@ -1,6 +1,13 @@
 <?php
+/**
+ * @author Drajat Hasan
+ * @email drajathasan20@gmail.com
+ * @create date 2021-06-29 08:15:05
+ * @modify date 2021-06-29 08:15:05
+ * @desc Herlpers
+ */
 
-function httpQuery($query = [])
+function httpQuery(array $query = [])
 {
     return http_build_query(array_unique(array_merge($_GET, $query)));
 }
@@ -74,4 +81,21 @@ function dd($mix, $exit = true)
 function sliceCallNumber($string)
 {
     return preg_split('/(?<=\w)\s+(?=[A-Za-z])/m', $string);
+}
+
+function callNumberColor($string, $arrayColor)
+{
+    $callNumber = substr(trim($string), 0,1);
+
+    if (!preg_match('/[0-9]/i', $callNumber))
+    {
+        $explodeCallnumber = explode(' ', $string);
+        $code = substr($explodeCallnumber[1], 0,1);
+    }
+    else
+    {
+        $code = $callNumber;
+    }
+
+    return (isset($arrayColor[$code.'XX'])) ? $arrayColor[$code.'XX'] : '#ffffff';
 }

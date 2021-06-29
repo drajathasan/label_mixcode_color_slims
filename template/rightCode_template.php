@@ -1,4 +1,11 @@
 <?php
+/**
+ * @author Drajat Hasan
+ * @email drajathasan20@gmail.com
+ * @create date 2021-06-29 08:12:31
+ * @modify date 2021-06-29 08:12:31
+ * @desc Right Template
+ */
 
 isDirect();
 
@@ -22,29 +29,48 @@ ob_start();
             }
 
             @media print {
-                * {
-                    margin: 0;
-                }
                 button {
                     display: none !important
                 }
+                .pagebreak {
+                    clear: both;
+                    page-break-after: always;
+                }
             }
+
+            @page  
+            { 
+                size: auto;   /* auto is the initial value */ 
+
+                /* this affects the margin in the printer settings */ 
+                margin: <?= $globalSettings['marginPage'] ?>;  
+            } 
         </style>
     </head>
     <body>
         <div class="w-full bg-gray-100 h-screen">
             <button class="bg-green-500 p-1 text-white" onClick="self.print()">Print</button>
             <?php
+            // set row
+            $row = 0;
+            // conver comma to dot
             $responsiveWidth = commaToDot(($settingsTemplate['widthBox'] - 5.4));
+            // loop chunked barcode
             foreach ($chunked_barcode_arrays as $barcode_array):
+                // set flex wrap
                 echo '<div class="flex flex-wrap">';
                 foreach ($barcode_array as $barcode):
+                    // slicing number
                     $callNumber = sliceCallNumber($barcode['call_number']);
-                    $titleSlice = substr($barcode['title'], 0,5);
+                    // shorting and slice it
+                    $titleSlice = substr($bacode['title'], 0,5);
+                    // get color
+                    $color = callNumberColor($barcode['call_number'], $palletColor);
+                    // set template
                     echo <<<HTML
-                        <div style="width:{$settingsTemplate['widthBox']}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 10px; margin-top: 10px">
+                        <div style="width:{$settingsTemplate['widthBox']}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 8px; margin-top: 10px">
                             <div class="inline-block" style="width: {$responsiveWidth}em ;height: {$settingsTemplate['heightBox']}em; border-right: 1px solid black">
-                                <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black">{$sysconf['library_name']}</span>
+                                <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
                                 <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
                             </div>
                             <div class="inline-block float-right mr-2" style="width: 75px;">
@@ -54,7 +80,11 @@ ob_start();
                         </div>
                     HTML;
                 endforeach; 
+                // increment row
+                $row++;
                 echo '</div>';
+                // set page break
+                echo (($row % $globalSettings['pageBreakAt']) === 0) ? '<div class="pagebreak"></div>' : null;
             endforeach; 
             ?>
         </div>
@@ -69,4 +99,5 @@ ob_start();
     </body>
 </html>
 <?php
+// get buffer
 $html_str = ob_get_clean();

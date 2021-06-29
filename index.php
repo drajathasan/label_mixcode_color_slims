@@ -36,10 +36,11 @@ if (!$can_read) {
 $page_title = 'Label Mixcode Color';
 
 // set config
-$sysconf['lbc_settings'] = ['chunk' => 2, 'template' => 'right', 'type' => 'Barcode', 'autoprint' => 1];
+$sysconf['lbc_settings'] = ['chunk' => 2, 'template' => 'right', 'type' => 'Barcode', 'marginPage' => '5mm 5mm 5mm 5mm', 'pageBreakAt' => 6, 'autoprint' => 1];
 $sysconf['lbc_leftCode'] = ['itemCode' => 'B00017', 'callNumberFontSize' => 'text-sm', 'callNumber' => '7965.555 919 Har n', 'widthBox' => 20, 'heightBox' => 10, 'widthBarcode' => 8,'heightBarcode' => 4, 'topBarcode' => 3.5, 'leftBarcode' => -5];
 $sysconf['lbc_rightCode'] = ['itemCode' => 'B00018', 'callNumberFontSize' => 'text-sm', 'callNumber' => '7965.555 919 Har n', 'widthBox' => 20, 'heightBox' => 10, 'widthBarcode' => 8,'heightBarcode' => 4, 'topBarcode' => 3.5, 'leftBarcode' => -5];
 $sysconf['lbc_bothCode'] = ['itemCode' => 'B00019', 'callNumberFontSize' => 'text-sm', 'callNumber' => '7965.555 919 Har n', 'widthBox' => 20, 'heightBox' => 10, 'widthBarcode' => 8,'heightBarcode' => 4, 'topBarcode' => 3.5, 'leftBarcode' => -5];
+$sysconf['lbc_color'] = ['0XX' => '#ffffff', '1XX' => '#ffffff', '2XX' => '#ffffff', '3XX' => '#ffffff', '4XX' => '#ffffff', '5XX' => '#ffffff','6XX' => '#ffffff', '7XX' => '#ffffff','8XX' => '#ffffff','9XX' => '#ffffff'];
 
 // load settings
 utility::loadSettings($dbs);
@@ -73,7 +74,7 @@ loadFile('pages/settings');
             <div class="btn-group">
                 <a target="blindSubmit" href="<?= $_SERVER['PHP_SELF'] . '?' . httpQuery(['action' => 'clear']) ?>" class="notAJAX btn btn-danger mx-1"><?= __('Clear Print Queue') ?></a>
                 <a target="blindSubmit" href="<?= $_SERVER['PHP_SELF'] . '?' . httpQuery(['action' => 'print']) ?>" class="notAJAX btn btn-primary mx-1"><?= __('Print Barcodes for Selected Data'); ?></a>
-                <a href="<?= $_SERVER['PHP_SELF'] . '?' . httpQuery(['action' => 'settings']) ?>" class="notAJAX btn btn-default openPopUp" width="780" height="500" title="<?= __('Change print barcode settings'); ?>"><?= __('Change print barcode settings'); ?></a>
+                <a href="<?= $_SERVER['PHP_SELF'] . '?' . httpQuery(['action' => 'settings']) ?>" class="notAJAX btn btn-default openPopUp mx-1" width="780" height="500" title="<?= __('Change print barcode settings'); ?>"><?= __('Change print barcode settings'); ?></a>
             </div>
             <form name="search" action="<?= $_SERVER['PHP_SELF'] . '?' . httpQuery() ?>" id="search" method="get" class="form-inline"><?= __('Search'); ?>
                 <input type="text" name="keywords" class="form-control col-md-3"/>

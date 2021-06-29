@@ -1,4 +1,11 @@
 <?php
+/**
+ * @author Drajat Hasan
+ * @email drajathasan20@gmail.com
+ * @create date 2021-06-29 08:17:10
+ * @modify date 2021-06-29 08:17:10
+ * @desc [description]
+ */
 
 isDirect();
 
@@ -61,6 +68,12 @@ foreach ($sysconf['lbc_settings'] as $config => $value) {
         case 'type':
             $label = 'tipe pola tersedia (Barcode,& Qrcode)';
             break;
+        case 'pageBreakAt':
+            $label = 'Pisah halaman pada baris ke - ';
+            break;
+        case 'marginPage':
+            $label = 'Margin Halaman Cetak (Atas,Kanan,Bawah,Kiri)';
+            break;
         default:
             $label = $config;
             break;
@@ -75,7 +88,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'settings'):
     <!-- Form Options -->
     <h3 class="font-bold p-3 text-gray-800 inline-block">Form pengaturan</h3>
     <select v-on:change="section = $event.target.value" class="p-2">
-        <option v-for="option in [['settings','Utama'],['rightCode','Label Kanan'],['leftCode','Label Kiri'],['bothCode','Label Kanan Kiri']]" :value="option[0]">{{ option[1] }}</option>
+        <option v-for="option in [['settings','Utama'],['rightCode','Label Kanan'],['leftCode','Label Kiri'],['bothCode','Label Kanan Kiri'],['selectColor','Warna Per Klasifikasi']]" :value="option[0]">{{ option[1] }}</option>
     </select>
 
     <!-- Setting -->
@@ -90,6 +103,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'settings'):
     <!-- Both Code -->
     <Bothcode v-if="section === 'bothCode'" code-type="<?= $codeType ?>" measurement="<?= jsonProps($sysconf['lbc_bothCode']) ?>" library-name="<?= $sysconf['library_name'] ?>"></Bothcode>
 
+    <!-- Color -->
+    <Selectcolor v-if="section === 'selectColor'" color-string="<?= jsonProps($sysconf['lbc_color']) ?>"></Selectcolor>
 
     <?php
     $content = ob_get_clean();
