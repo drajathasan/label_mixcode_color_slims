@@ -1,5 +1,8 @@
-# Label Mixcode Color (Alpha/Unstable)
+# Label Mixcode Color (Beta/Testing)
+Design your label
 ![preview](./preview.png)
+Choose your label color self
+![preview](./preview2.png)
 
 ### Feature
 * Design your label barcode just type and click
