@@ -4,7 +4,7 @@
  * @email drajathasan20@gmail.com
  * @create date 2021-06-29 08:12:31
  * @modify date 2021-06-29 08:12:31
- * @desc Right Template
+ * @desc Left Template
  */
 
 isDirect();
@@ -69,13 +69,13 @@ ob_start();
                     // set template
                     echo <<<HTML
                         <div style="width:{$settingsTemplate['widthBox']}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 8px; margin-top: 10px">
-                            <div class="inline-block" style="width: {$responsiveWidth}em ;height: {$settingsTemplate['heightBox']}em; border-right: 1px solid black">
-                                <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
-                                <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
-                            </div>
-                            <div class="inline-block float-right mr-2" style="width: 75px;">
+                            <div class="inline-block float-left mr-2" style="width: 75px;">
                                 <small class="pl-2 pt-1">{$titleSlice} ...</small>
                                 <img class="inline-block rot270 barcode" jsbarcode-format="CODE128" jsbarcode-value="{$barcode['item_code']}" style="width: {$settingsTemplate['widthBarcode']}em; height: {$settingsTemplate['heightBarcode']}em; margin-top: {$settingsTemplate['topBarcode']}em; margin-left: {$settingsTemplate['leftBarcode']}em; position: absolute;"/>
+                            </div>
+                            <div class="inline-block" style="width: {$responsiveWidth}em ;height: {$settingsTemplate['heightBox']}em; border-left: 1px solid black">
+                                <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
+                                <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
                             </div>
                         </div>
                     HTML;

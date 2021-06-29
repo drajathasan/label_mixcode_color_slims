@@ -1,3 +1,12 @@
+/**
+ * @author Drajat Hasan
+ * @email drajathasan20@gmail.com
+ * @create date 2021-06-29 10:59:41
+ * @modify date 2021-06-29 10:59:41
+ * @desc Form Settings
+ */
+
+//  Template
 const temp = `
     <div class="mb-32">
         <div class="flex flex-wrap" v-for="field,index in decodeFields(fields)">

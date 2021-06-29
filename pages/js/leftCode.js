@@ -1,3 +1,12 @@
+/**
+ * @author Drajat Hasan
+ * @email drajathasan20@gmail.com
+ * @create date 2021-06-29 10:57:36
+ * @modify date 2021-06-29 10:57:36
+ * @desc Just for design
+ */
+
+//  Template
 const temp = `
     <div class="flex flex-wrap mt-5 mb-10">
         <div class="w-3/12 bg-gray-200 px-8 pt-8 pb-32 h-screen overflow-y-auto">

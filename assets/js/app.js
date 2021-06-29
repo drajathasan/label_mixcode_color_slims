@@ -1,11 +1,22 @@
+/**
+ * @author Drajat Hasan
+ * @email drajathasan20@gmail.com
+ * @create date 2021-06-29 11:02:26
+ * @modify date 2021-06-29 11:02:26
+ * @desc App.js
+ */
+
+// Load components
 import Settings from './../../pages/js/subSettings.js?v=310'
 import Rightcode from './../../pages/js/rightCode.js?v=310'
 import Leftcode from './../../pages/js/leftCode.js?v=310'
 import Bothcode from './../../pages/js/bothCode.js?v=310'
 import Selectcolor from './../../pages/js/selectColor.js?v=360'
 
+// Create global data,methods,etc
 Vue.mixin({
     methods: {
+        // Save form
         async save(type, ref)
         {
             let keys = Object.keys(ref)
@@ -49,6 +60,7 @@ Vue.mixin({
                 }
             })
         },
+        // save color
         async saveColor(ref)
         {
             delete ref.colorPicker
@@ -95,6 +107,7 @@ Vue.mixin({
     }
 })
 
+// App instance
 const app = new Vue({
     el: '#content',
     data: {

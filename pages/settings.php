@@ -57,9 +57,11 @@ if (isset($_POST['type']))
     }
 }
 
+// Modify for detail
 $codeType = $sysconf['lbc_settings']['type'];
 $settings = [];
 foreach ($sysconf['lbc_settings'] as $config => $value) {
+    // check
     switch ($config) {
         case 'template':
             $label = 'template tersedia (right,left,& both)';
@@ -78,12 +80,15 @@ foreach ($sysconf['lbc_settings'] as $config => $value) {
             $label = $config;
             break;
     }
+    // set up settings
     $settings[] = ['key' => $config, 'label' => ucwords($label), 'value' => str_replace('"', '', $value)];
 }
 
+// If request is action and action = settings
 if (isset($_GET['action']) && $_GET['action'] === 'settings'):
     ob_start();
     ?>
+    <!-- Vue Area-->
 
     <!-- Form Options -->
     <h3 class="font-bold p-3 text-gray-800 inline-block">Form pengaturan</h3>
@@ -106,9 +111,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'settings'):
     <!-- Color -->
     <Selectcolor v-if="section === 'selectColor'" color-string="<?= jsonProps($sysconf['lbc_color']) ?>"></Selectcolor>
 
+    <!-- End Vue Area -->
     <?php
+    // set buffer
     $content = ob_get_clean();
-
+    // load file
     loadFile('template/buffer_template', 'include');
     exit;
 endif;
