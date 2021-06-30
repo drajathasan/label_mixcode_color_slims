@@ -58,7 +58,7 @@ if (isset($_POST['type']))
 }
 
 // Modify for detail
-$codeType = $sysconf['lbc_settings']['type'];
+$codeType = $sysconf['lbc_settings']['codeType'];
 $settings = [];
 foreach ($sysconf['lbc_settings'] as $config => $value) {
     // check
@@ -67,7 +67,7 @@ foreach ($sysconf['lbc_settings'] as $config => $value) {
             $label = 'template tersedia (right,left,& both)';
             break;
         
-        case 'type':
+        case 'codeType':
             $label = 'tipe pola tersedia (Barcode,& Qrcode)';
             break;
         case 'pageBreakAt':

@@ -36,7 +36,7 @@ if (!$can_read) {
 $page_title = 'Label Mixcode Color';
 
 // set config
-$sysconf['lbc_settings'] = ['chunk' => 2, 'template' => 'right', 'type' => 'Barcode', 'marginPage' => '5mm 5mm 5mm 5mm', 'pageBreakAt' => 6, 'autoprint' => 1];
+$sysconf['lbc_settings'] = ['chunk' => 2, 'template' => 'right', 'codeType' => 'Barcode', 'marginPage' => '5mm 5mm 5mm 5mm', 'pageBreakAt' => 6, 'autoprint' => 1];
 $sysconf['lbc_leftCode'] = ['itemCode' => 'B00017', 'callNumberFontSize' => 'text-sm', 'callNumber' => '7965.555 919 Har n', 'widthBox' => 20, 'heightBox' => 10, 'widthBarcode' => 8,'heightBarcode' => 4, 'topBarcode' => 3.5, 'leftBarcode' => -5];
 $sysconf['lbc_rightCode'] = ['itemCode' => 'B00018', 'callNumberFontSize' => 'text-sm', 'callNumber' => '7965.555 919 Har n', 'widthBox' => 20, 'heightBox' => 10, 'widthBarcode' => 8,'heightBarcode' => 4, 'topBarcode' => 3.5, 'leftBarcode' => -5];
 $sysconf['lbc_bothCode'] = ['itemCode' => 'B00019', 'callNumberFontSize' => 'text-sm', 'callNumber' => '7965.555 919 Har n', 'widthBox' => 20, 'heightBox' => 10, 'widthBarcode' => 8,'heightBarcode' => 4, 'topBarcode' => 3.5, 'leftBarcode' => -5];
