@@ -53,8 +53,7 @@ ob_start();
             <?php
             // set row
             $row = 0;
-            // conver comma to dot
-            $responsiveWidth = commaToDot(($settingsTemplate['widthBox'] - 5.4));
+            $rowData = 0;
             // loop chunked barcode
             foreach ($chunked_barcode_arrays as $barcode_array):
                 // set flex wrap
@@ -67,18 +66,48 @@ ob_start();
                     // get color
                     $color = callNumberColor($barcode['call_number'], $palletColor);
                     // set template
-                    echo <<<HTML
-                        <div style="width:{$settingsTemplate['widthBox']}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 8px; margin-top: 10px">
-                            <div class="inline-block" style="width: {$responsiveWidth}em ;height: {$settingsTemplate['heightBox']}em; border-right: 1px solid black">
-                                <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
-                                <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
+                    // Barcode
+                    if ($globalSettings['codeType'] === 'Barcode'):
+                        // conver comma to dot
+                        $responsiveWidth = commaToDot(($settingsTemplate['widthBox'] - 5.4));
+                        echo <<<HTML
+                            <div style="width:{$settingsTemplate['widthBox']}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 8px; margin-top: 10px">
+                                <div class="inline-block" style="width: {$responsiveWidth}em ;height: {$settingsTemplate['heightBox']}em; border-right: 1px solid black">
+                                    <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
+                                    <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
+                                </div>
+                                <div class="inline-block float-right mr-2" style="width: 75px;">
+                                    <small class="pl-2 pt-1">{$titleSlice} ...</small>
+                                    <img class="inline-block rot270 barcode" jsbarcode-format="CODE128" jsbarcode-value="{$barcode['item_code']}" style="width: {$settingsTemplate['widthBarcode']}em; height: {$settingsTemplate['heightBarcode']}em; margin-top: {$settingsTemplate['topBarcode']}em; margin-left: {$settingsTemplate['leftBarcode']}em; position: absolute;"/>
+                                </div>
                             </div>
-                            <div class="inline-block float-right mr-2" style="width: 75px;">
-                                <small class="pl-2 pt-1">{$titleSlice} ...</small>
-                                <img class="inline-block rot270 barcode" jsbarcode-format="CODE128" jsbarcode-value="{$barcode['item_code']}" style="width: {$settingsTemplate['widthBarcode']}em; height: {$settingsTemplate['heightBarcode']}em; margin-top: {$settingsTemplate['topBarcode']}em; margin-left: {$settingsTemplate['leftBarcode']}em; position: absolute;"/>
+                        HTML;
+                    // Qrcode
+                    elseif ($globalSettings['codeType'] === 'Qrcode'):
+                        // conver comma to dot
+                        $responsiveWidth1 = commaToDot(($settingsTemplate['widthBox'] + 4));
+                        $responsiveWidth2 = commaToDot(($settingsTemplate['widthBox'] - 5.4));
+                        $widthQrcode = commaToDot($settingsTemplate['widthBarcode'] - 1);
+                        $heightQrcode = commaToDot($settingsTemplate['heightBarcode'] + 2);
+                        $marginTop = commaToDot($settingsTemplate['topBarcode'] - 1);
+                        $marginLeft = commaToDot($settingsTemplate['leftBarcode'] + (-0.4));
+                        // set image and div selector id based row data
+                        $rowId = ($rowData+1); 
+                        echo <<<HTML
+                            <div style="width:{$responsiveWidth1}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 8px; margin-top: 10px">
+                                <div class="inline-block" style="width: {$responsiveWidth2}em ;height: {$settingsTemplate['heightBox']}em; border-right: 1px solid black">
+                                    <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
+                                    <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
+                                </div>
+                                <div class="inline-block float-right mr-2" style="width: 100px;">
+                                    <small class="pl-2 pt-1">{$titleSlice} ...</small>
+                                    <img id="img{$rowId}" data-code="{$barcode['item_code']}" class="inline-block qrcode" style="width: {$widthQrcode}em; height: {$heightQrcode}em; margin-top: {$marginTop}em; margin-left: {$marginLeft}em; position: absolute;"/>
+                                    <div id="qrcode{$rowId}"></div>
+                                </div>
                             </div>
-                        </div>
-                    HTML;
+                        HTML;
+                    endif;
+                    $rowData++; // counting data
                 endforeach; 
                 // increment row
                 $row++;
@@ -89,9 +118,36 @@ ob_start();
             ?>
         </div>
         <!-- Load JS Barcode -->
-        <script src="<?= $assetPath . '/assets/js/JsBarcode.all.min.js'?>"></script>
-        <!-- Make init -->
-        <script>JsBarcode(".barcode").init();</script>
+        <?php  if ($globalSettings['codeType'] === 'Barcode'): ?>
+            <script src="<?= $assetPath . '/assets/js/JsBarcode.all.min.js'?>"></script>
+            <!-- Make JS Barcode -->
+            <script>JsBarcode(".barcode").init();</script>
+        <?php  elseif ($globalSettings['codeType'] === 'Qrcode'): ?>
+            <script src="<?= $assetPath . '/assets/js/qrcode.min.js'?>"></script>
+            <script>
+                // set doc
+                let doc = document
+                // QRcode instance
+                function creatQr(imgSelector,divSelector)
+                {
+                    new QRCode(divSelector, {
+                        text: imgSelector.dataset.code,
+                        render: "canvas",  //Rendering mode specifies canvas mode
+                    })
+
+                    let canvas = divSelector.children[0];
+        
+                    imgSelector.setAttribute('src', canvas.toDataURL("image/png"))
+
+                    divSelector.classList.add('hidden')
+                }
+
+                // setup for qrcode
+                <?php for ($r = 1; $r <= $rowData; $r++): ?>
+                creatQr(doc.querySelector('#img<?= $r ?>'), doc.querySelector('#qrcode<?= $r ?>'))
+                <?php endfor; ?>
+            </script>
+        <?php  endif;?>
         <!-- Auto show print dialog -->
         <?php if ($globalSettings['autoprint']): ?>
             <script>self.print()</script>

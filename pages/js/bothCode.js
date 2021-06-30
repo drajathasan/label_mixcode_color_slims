@@ -30,7 +30,7 @@ const temp = `
             <input type="number" class="p-2" v-model="leftBarcode" ref="leftBarcode"/>
             <button class="my-1 p-2 rounded-lg text-sm text-white bg-blue-800 mt-2" v-on:click="save('bothCode', $refs)">Simpan</button>
         </div>
-        <div class="w-9/12 pl-10 bg-gray-100 h-screen">
+        <div v-if="codeType === 'Barcode'" class="w-9/12 pl-10 bg-gray-100 h-screen">
             <div class="flex flex-wrap">
                 <div :style="'width:' +widthBox+ 'em; height: ' +heightBox+ 'em; border: 1px solid black'">
                     <div class="inline-block float-left mr-2" style="width: 75px;">
@@ -44,6 +44,26 @@ const temp = `
                     <div class="inline-block float-right mr-2" style="width: 75px;">
                         <small class="pl-2 pt-1">Judul ...</small>
                         <img ref="barcode2" class="inline-block rot270" :style="'width: ' +widthBarcode+ 'em; height: '+heightBarcode+'em; margin-top: '+topBarcode+'em; margin-left: '+leftBarcode+'em; position: absolute;' "/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="codeType === 'Qrcode'" class="w-9/12 pl-10 bg-gray-100 h-screen">
+            <div class="flex flex-wrap">
+                <div :style="'width:' +calcMath(Number(widthBox),6,'+')+ 'em; height: ' +heightBox+ 'em; border: 1px solid black'">
+                    <div class="inline-block float-left mr-2" style="width: 120px;">
+                        <small class="pl-2 pt-1">Judul ...</small>
+                        <img ref="barcode1" class="inline-block" :style="'width: ' +calcMath(Number(widthBarcode),2,'-')+ 'em; height: '+calcMath(Number(heightBarcode),2,'+')+'em; margin-top: '+calcMath(Number(topBarcode),1,'-')+'em; margin-left: '+calcMath(Number(leftBarcode),(2.5),'+')+'em; position: absolute;' "/>
+                        <div ref="qrcode1"></div>
+                    </div>
+                    <div class="inline-block" :style="'width: '+(widthBox - 11 )+'em ;height: ' +heightBox+ 'em; border-left: 1px solid black; border-right: 1px solid black'">
+                        <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black">{{ libraryName }}</span>
+                        <span :class="'w-full block text-center text-md mt-8 font-bold '+callNumberFontSize" v-html="callNumberSplit(callNumber)"></span>
+                    </div>
+                    <div class="inline-block float-right mr-2" style="width: 120px;">
+                        <small class="pl-2 pt-1">Judul ...</small>
+                        <img ref="barcode2" class="inline-block" :style="'width: ' +calcMath(Number(widthBarcode),2,'-')+ 'em; height: '+calcMath(Number(heightBarcode),2,'+')+'em; margin-top: '+calcMath(Number(topBarcode),1,'-')+'em;margin-left: '+calcMath(Number(leftBarcode),2,'+')+'em; position: absolute;' "/>
+                        <div ref="qrcode2"></div>
                     </div>
                 </div>
             </div>
@@ -72,15 +92,66 @@ export default {
         }
     },
     methods: {
+        initCode(){
+            if (this.codeType === 'Barcode')
+            {
+                this.createBarcode()
+            }
+            else
+            {
+                this.createQrcode()
+            }
+        },
         createBarcode()
         {
             JsBarcode(this.$refs.barcode, this.itemCode)
             JsBarcode(this.$refs.barcode2, this.itemCode)
         },
+        createQrcode()
+        {
+            this.$refs.qrcode1.innerHTML = ''
+            this.$refs.qrcode2.innerHTML = ''
+
+            setTimeout(() => {
+                for (let index = 1; index <= 2; index++) {
+                    new QRCode(this.$refs[`qrcode${index}`], {
+                        text: this.itemCode,
+                        render: "canvas",  //Rendering mode specifies canvas mode
+                    })
+                    var canvas = document.getElementsByTagName('canvas')[0];
+        
+                    this.$refs.barcode1.setAttribute('src', canvas.toDataURL("image/png"))
+                    this.$refs.barcode2.setAttribute('src', canvas.toDataURL("image/png"))
+                    this.$refs[`qrcode${index}`].classList.add('hidden')
+                }
+            }, 500);
+        },
         changeItemCode(value)
         {
             this.itemCode = value
-            this.createBarcode()
+            if (this.codeType === 'Barcode')
+            {
+                this.createBarcode()
+            }
+            else
+            {
+                this.createQrcode()
+            }
+        },
+        calcMath(a,b, operator)
+        {
+            let result
+            switch (operator) {
+                case '-':
+                    result = a - b
+                    break;
+            
+                default:
+                    result = a + b
+                    break;
+            }
+
+            return result
         },
         callNumberSplit(callNumber)
         {
@@ -102,6 +173,6 @@ export default {
     mounted()
     {
         this.setData()
-        this.createBarcode()
+        this.initCode()
     }
 }

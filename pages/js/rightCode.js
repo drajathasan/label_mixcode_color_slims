@@ -45,20 +45,20 @@ const temp = `
             </div>
         </div>
         <div v-if="codeType === 'Qrcode'" class="w-9/12 pl-10 bg-gray-100 h-screen">
-        <div class="flex flex-wrap">
-            <div :style="'width:' +calcMath(Number(widthBox),4,'+')+ 'em; height: ' +heightBox+ 'em; border: 1px solid black'">
-                <div class="inline-block" :style="'width: '+calcMath(widthBox,5.4,'-')+'em ;height: ' +heightBox+ 'em; border-right: 1px solid black'">
-                    <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black">{{ libraryName }}</span>
-                    <span :class="'w-full block text-center text-md mt-8 font-bold '+callNumberFontSize" v-html="callNumberSplit(callNumber)"></span>
-                </div>
-                <div class="inline-block float-right mr-2" style="width: 100px;">
-                    <small class="pl-2 pt-1">Judul ...</small>
-                    <img ref="barcode" class="inline-block" :style="'width: ' +calcMath(Number(widthBarcode),1,'-')+ 'em; height: '+calcMath(Number(heightBarcode),2,'+')+'em; margin-top: '+calcMath(Number(topBarcode),1,'-')+'em; margin-left: '+calcMath(Number(leftBarcode),(0.2),'+')+'em; position: absolute;' "/>
-                    <div ref="qrcode"></div>
+            <div class="flex flex-wrap">
+                <div :style="'width:' +calcMath(Number(widthBox),4,'+')+ 'em; height: ' +heightBox+ 'em; border: 1px solid black'">
+                    <div class="inline-block" :style="'width: '+calcMath(widthBox,5.4,'-')+'em ;height: ' +heightBox+ 'em; border-right: 1px solid black'">
+                        <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black">{{ libraryName }}</span>
+                        <span :class="'w-full block text-center text-md mt-8 font-bold '+callNumberFontSize" v-html="callNumberSplit(callNumber)"></span>
+                    </div>
+                    <div class="inline-block float-right mr-2" style="width: 100px;">
+                        <small class="pl-2 pt-1">Judul ...</small>
+                        <img ref="barcode" class="inline-block" :style="'width: ' +calcMath(Number(widthBarcode),1,'-')+ 'em; height: '+calcMath(Number(heightBarcode),2,'+')+'em; margin-top: '+calcMath(Number(topBarcode),1,'-')+'em; margin-left: '+calcMath(Number(leftBarcode),(0.2),'+')+'em; position: absolute;' "/>
+                        <div ref="qrcode"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 `
 
