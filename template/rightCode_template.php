@@ -84,15 +84,17 @@ ob_start();
                         HTML;
                     // Qrcode
                     elseif ($globalSettings['codeType'] === 'Qrcode'):
+                        // set image and div selector id based row data
+                        $rowId = ($rowData+1); 
                         // conver comma to dot
                         $responsiveWidth1 = commaToDot(($settingsTemplate['widthBox'] + 4));
                         $responsiveWidth2 = commaToDot(($settingsTemplate['widthBox'] - 5.4));
                         $widthQrcode = commaToDot($settingsTemplate['widthBarcode'] - 1);
                         $heightQrcode = commaToDot($settingsTemplate['heightBarcode'] + 2);
                         $marginTop = commaToDot($settingsTemplate['topBarcode'] - 1);
-                        $marginLeft = commaToDot($settingsTemplate['leftBarcode'] + (-0.4));
-                        // set image and div selector id based row data
-                        $rowId = ($rowData+1); 
+                        // special measure ment
+                        $num = ($rowId === $allData) ? (0.2) : (-0.4);
+                        $marginLeft = commaToDot($settingsTemplate['leftBarcode'] + $num);
                         echo <<<HTML
                             <div style="width:{$responsiveWidth1}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 8px; margin-top: 10px">
                                 <div class="inline-block" style="width: {$responsiveWidth2}em ;height: {$settingsTemplate['heightBox']}em; border-right: 1px solid black">

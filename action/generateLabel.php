@@ -59,6 +59,9 @@ if (isset($_GET['action']) AND $_GET['action'] == 'print') {
     }
   }
 
+  // all data
+  $allData = count($item_data_array);
+
   // chunk barcode array
   $chunked_barcode_arrays = array_chunk($item_data_array, $globalSettings['chunk']);
   
