@@ -49,7 +49,7 @@ if (isset($_GET['action']) AND $_GET['action'] == 'print') {
   // strip the last comma
   $item_ids = substr_replace($item_ids, '', -1);
   // send query to database
-  $item_q = $dbs->query('SELECT b.title, i.item_code, b.call_number, b.biblio_id FROM item AS i
+  $item_q = $dbs->query('SELECT b.title, i.item_code, i.call_number, b.biblio_id FROM item AS i
     LEFT JOIN biblio AS b ON i.biblio_id=b.biblio_id
     WHERE i.item_code IN('.$item_ids.')');
   $item_data_array = array();

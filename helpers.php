@@ -80,7 +80,14 @@ function dd($mix, $exit = true)
 
 function sliceCallNumber($string)
 {
-    return preg_split('/(?<=\w)\s+(?=[A-Za-z])/m', $string);
+    $split = preg_split('/(?<=\w)\s+(?=[A-Za-z])/m', $string);
+    $result = '';
+    
+    foreach ($split as $stringSplit) {
+        $result .= $stringSplit . '<br/>';
+    }
+
+    return substr_replace($result, '', -5);
 }
 
 function callNumberColor($string, $arrayColor)

@@ -7,6 +7,8 @@
 
 use SLiMS\DB;
 
+
+
 defined('INDEX_AUTH') OR die('Direct access not allowed!');
 
 // IP based access limitation
@@ -47,6 +49,11 @@ utility::loadSettings($dbs);
 
 // helpers
 require __DIR__.'/helpers.php';
+
+echo '<pre>';
+var_dump(sliceCallNumber('713 Has M c.1'));
+echo '</pre>';
+exit;
 
 /* Action Area */
 $max_print = 50;
@@ -138,7 +145,7 @@ $datagrid = new simbio_datagrid();
  $datagrid->setSQLColumn('item.item_code',
  'item.item_code AS \''.__('Item Code').'\'',
  'index.title AS \''.__('Title').'\'',
- 'index.call_number AS \'Nomor Panggil\'');
+ 'item.call_number AS \'Nomor Panggil\'');
 
 $datagrid->setSQLorder('item.last_update DESC');
 

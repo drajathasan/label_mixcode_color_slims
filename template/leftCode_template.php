@@ -78,7 +78,7 @@ ob_start();
                                 </div>
                                 <div class="inline-block" style="width: {$responsiveWidth}em ;height: {$settingsTemplate['heightBox']}em; border-left: 1px solid black">
                                     <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
-                                    <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
+                                    <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber}</span>
                                 </div>
                             </div>
                         HTML;
