@@ -50,11 +50,6 @@ utility::loadSettings($dbs);
 // helpers
 require __DIR__.'/helpers.php';
 
-echo '<pre>';
-var_dump(sliceCallNumber('713 Has M c.1'));
-echo '</pre>';
-exit;
-
 /* Action Area */
 $max_print = 50;
 
