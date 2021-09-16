@@ -17,13 +17,19 @@ if (isset($_POST['type']))
     $key = $_POST['type'];
     // check type
     if (!isset($sysconf['lbc_'.$key])) jsonResponse(['status' => false, 'msg' => 'Data tidak ada!']);
+
+    // template available
+    $templateCode = ['left', 'right', 'Both'];
     
     // set data
     $data = $sysconf['lbc_'.$key];
+    
     // unset data
     unset($_POST['type']);
     // serialize data
     $data = $_POST;
+    // Template check
+    if (!in_array($data['template'], $templateCode)) jsonResponse(['status' => false, 'msg' => 'Template ' . $data['template'] . ' tidak ada perhatikan besar kecilnya karakter yang anda masukan.']);
     $serializeData = serialize($data);
     // set instance
     $dbs = SLiMS\DB::getInstance();

@@ -80,11 +80,24 @@ function dd($mix, $exit = true)
 
 function sliceCallNumber($string)
 {
+    if (empty($string))
+    {
+        return '<b style="color: red">callnumbernya<br/>dimana<br/>udah dimasukin belum di data itemnya?</b>';
+    }
+
     $split = preg_split('/(?<=\w)\s+(?=[A-Za-z])/m', $string);
     $result = '';
     
-    foreach ($split as $stringSplit) {
-        $result .= $stringSplit . '<br/>';
+    foreach ($split as $index => $stringSplit) {
+        if ($index === 0 && preg_match('/[A-Za-z]/i', substr($stringSplit, 0,1)))
+        {
+            $Plus = explode(' ', $stringSplit);
+            $result .= $Plus[0] . '<br/>' . $Plus[1] . '<br/>';
+        }
+        else
+        {
+            $result .= $stringSplit . '<br/>';
+        }
     }
 
     return substr_replace($result, '', -5);
@@ -97,7 +110,7 @@ function callNumberColor($string, $arrayColor)
     if (!preg_match('/[0-9]/i', $callNumber))
     {
         $explodeCallnumber = explode(' ', $string);
-        $code = substr($explodeCallnumber[1], 0,1);
+        $code = substr(isset($explodeCallnumber[1]) ? $explodeCallnumber[1] : '?', 0,1);
     }
     else
     {

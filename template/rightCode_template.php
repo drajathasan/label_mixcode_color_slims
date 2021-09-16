@@ -99,7 +99,7 @@ ob_start();
                             <div style="width:{$responsiveWidth1}em; height: {$settingsTemplate['heightBox']}em; border: 1px solid black; margin-left: 8px; margin-top: 10px">
                                 <div class="inline-block" style="width: {$responsiveWidth2}em ;height: {$settingsTemplate['heightBox']}em; border-right: 1px solid black">
                                     <span class="w-full block text-center text-sm" style="border-bottom: 1px solid black; background-color:{$color}">{$sysconf['library_name']}</span>
-                                    <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber[0]}<br/>{$callNumber[1]}<br/>{$callNumber[2]}</span>
+                                    <span class="w-full block text-center text-md mt-8 font-bold {$settingsTemplate['callNumberFontSize']}"> {$callNumber}</span>
                                 </div>
                                 <div class="inline-block float-right mr-2" style="width: 100px;">
                                     <small class="pl-2 pt-1">{$titleSlice} ...</small>
