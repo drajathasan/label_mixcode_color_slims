@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2021-06-29 08:17:10
- * @modify date 2021-06-29 08:17:10
+ * @modify date 2021-09-24 10:45:36
  * @desc [description]
  */
 
@@ -19,17 +19,16 @@ if (isset($_POST['type']))
     if (!isset($sysconf['lbc_'.$key])) jsonResponse(['status' => false, 'msg' => 'Data tidak ada!']);
 
     // template available
-    $templateCode = ['left', 'right', 'Both'];
+    $templateCode = ['left', 'right', 'Both','settings'];
     
     // set data
     $data = $sysconf['lbc_'.$key];
-    
     // unset data
     unset($_POST['type']);
     // serialize data
     $data = $_POST;
     // Template check
-    if (!in_array($data['template'], $templateCode)) jsonResponse(['status' => false, 'msg' => 'Template ' . $data['template'] . ' tidak ada perhatikan besar kecilnya karakter yang anda masukan.']);
+    if (!in_array(str_replace('Code', '', $key), $templateCode)) jsonResponse(['status' => false, 'msg' => 'Template ' . str_replace('Code', '', $key) . ' tidak ada perhatikan besar kecilnya karakter yang anda masukan.']);
     $serializeData = serialize($data);
     // set instance
     $dbs = SLiMS\DB::getInstance();
