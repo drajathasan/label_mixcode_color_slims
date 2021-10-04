@@ -19,7 +19,7 @@ if (isset($_POST['type']))
     if (!isset($sysconf['lbc_'.$key])) jsonResponse(['status' => false, 'msg' => 'Data tidak ada!']);
 
     // template available
-    $templateCode = ['left', 'right', 'Both','settings'];
+    $templateCode = ['left', 'right', 'Both','settings','color'];
     
     // set data
     $data = $sysconf['lbc_'.$key];
