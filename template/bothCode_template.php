@@ -48,7 +48,7 @@ ob_start();
         </style>
     </head>
     <body>
-        <div class="w-full bg-gray-100 h-screen">
+        <div class="w-full h-screen">
             <button class="bg-green-500 p-1 text-white" onClick="self.print()">Print</button>
             <div class="w-full rounded-lg block my-3 p-3 font-bold bg-yellow-300 text-gray-800">Qrcode untuk posisi kanan dan kiri belum tersedia.</div>
             <?php

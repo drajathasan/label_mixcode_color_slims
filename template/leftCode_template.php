@@ -48,7 +48,7 @@ ob_start();
         </style>
     </head>
     <body>
-        <div class="w-full bg-gray-100 h-screen">
+        <div class="w-full h-screen">
             <button class="bg-green-500 p-1 text-white" onClick="self.print()">Print</button>
             <?php
             // set row
