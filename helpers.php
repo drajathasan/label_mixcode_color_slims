@@ -69,15 +69,6 @@ function jsonPost($key = '')
     return (!empty($key) && isset($post[$key])) ? $post[$key] : $post;
 }
 
-function dd($mix, $exit = true)
-{
-    echo '<pre>';
-    var_dump($mix);
-    echo '</pre>';
-
-    if ($exit) exit;
-}
-
 function sliceCallNumber($string)
 {
     if (empty($string))
