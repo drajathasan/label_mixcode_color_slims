@@ -10,7 +10,7 @@ $js = (ENVIRONMENT === 'development') ? '.js' : '.min.js';
 <!DOCTYPE Html>
 <html>
     <head>
-        <title><?= $title ?></title>
+        <title><?= $title??'' ?></title>
         <link href="<?= $assetPath . '/assets/css/tailwind.min.css'?>" rel="stylesheet"/>
         <style>
             .rot90 {

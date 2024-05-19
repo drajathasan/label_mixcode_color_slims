@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2021-06-29 08:12:31
- * @modify date 2021-06-29 08:12:31
+ * @modify date 2024-05-19 19:53:44
  * @desc Left Template
  */
 
@@ -17,7 +17,7 @@ ob_start();
 <!DOCTYPE Html>
 <html>
     <head>
-        <title><?= $title ?></title>
+        <title><?= $title??'' ?></title>
         <link href="<?= $assetPath . '/assets/css/tailwind.min.css'?>" rel="stylesheet"/>
         <style>
 

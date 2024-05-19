@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2021-06-29 08:15:59
- * @modify date 2021-06-29 08:15:59
+ * @modify date 2024-05-19 20:00:27
  * @desc [description]
  */
 
@@ -23,11 +23,11 @@ if (isset($_GET['action']) AND $_GET['action'] == 'print') {
   // global settings
   $globalSettings = $sysconf['lbc_settings'];
   // set settings per Template
-  $settingsTemplate = $sysconf['lbc_' . $globalSettings['template'] . 'Code'];
+  $settingsTemplate = $sysconf['lbc_' . strtolower($globalSettings['template']) . 'Code'];
   // color pallet
   $palletColor = $sysconf['lbc_color'];
   // set Template dir
-  $templateDir = __DIR__.'/../template/'.$globalSettings['template'] . 'Code_template.php';
+  $templateDir = __DIR__.'/../template/'.strtolower($globalSettings['template']) . 'Code_template.php';
 
   if (!isset($settingsTemplate))
   {
@@ -66,7 +66,7 @@ if (isset($_GET['action']) AND $_GET['action'] == 'print') {
   $chunked_barcode_arrays = array_chunk($item_data_array, $globalSettings['chunk']);
   
   // include main template
-  include __DIR__.'/../template/'.$globalSettings['template'] . 'Code_template.php';
+  include __DIR__.'/../template/'.strtolower($globalSettings['template']) . 'Code_template.php';
 
   // unset the session
   unset($_SESSION['mix_barcodes']);
