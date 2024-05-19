@@ -1,0 +1,18 @@
+{
+    "name": "drajathasan/mixcode",
+    "type": "senaya-plugin",
+    "license": "GPL-3.0",
+    "autoload": {
+        "psr-4": {
+            "Mixcode\\": "lib/"
+        },
+        "files": ["lib/Ui/helpers.php"]
+    },
+    "authors": [
+        {
+            "name": "Drajat Hasan"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

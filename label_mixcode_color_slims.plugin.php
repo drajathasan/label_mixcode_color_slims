@@ -7,9 +7,15 @@
  * Author: Drajat Hasan
  * Author URI: https://t.me/drajathasan/
  */
+ use SLiMS\Plugins;
 
-// get plugin instance
-$plugin = \SLiMS\Plugins::getInstance();
+// require autoload
+require __DIR__ . '/vendor/autoload.php';
 
 // registering menus
-$plugin->registerMenu('bibliography', 'Label Mixcode Color', __DIR__ . '/index.php');
+Plugins::getInstance()
+    ->registerMenu(
+        module_name: 'bibliography', 
+        label: 'Label Mixcode Color', 
+        path: __DIR__ . '/pages/print.php'
+    );
