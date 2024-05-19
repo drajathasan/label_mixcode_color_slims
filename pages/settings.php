@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2021-06-29 08:17:10
- * @modify date 2021-09-24 10:45:36
+ * @modify date 2024-05-19 20:09:43
  * @desc [description]
  */
 
@@ -19,7 +19,7 @@ if (isset($_POST['type']))
     if (!isset($sysconf['lbc_'.$key])) jsonResponse(['status' => false, 'msg' => 'Data tidak ada!']);
 
     // template available
-    $templateCode = ['left', 'right', 'Both','settings','color'];
+    $templateCode = ['left', 'right', 'both','settings','color'];
     
     // set data
     $data = $sysconf['lbc_'.$key];
