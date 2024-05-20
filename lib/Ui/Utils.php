@@ -16,4 +16,25 @@ trait Utils
 
         return $char;
     }
+
+    public function isPlugin(string &$self = '')
+    {
+        return basename($self = $_SERVER['PHP_SELF']) === 'plugin_container.php';
+    }
+
+    public function getSelfUrl(array $additionalUrl = [])
+    {
+        $self = '';
+        if ($this->isPlugin($self)) {
+            unset($additionalUrl['id']);
+            unset($additionalUrl['mod']);
+        }
+
+        $query = $_GET;
+        foreach ($additionalUrl as $key => $value) {
+            $query[$key] = $value;
+        }
+
+        return trim($self . ($query ? '?' . http_build_query($query) : ''));
+    }
 }

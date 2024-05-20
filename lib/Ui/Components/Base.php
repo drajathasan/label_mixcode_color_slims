@@ -38,7 +38,7 @@ abstract class Base
         $attribute = ($argument = func_get_args());
         if (func_num_args() == 2) {
             $newAttribute = [];
-            $newAttribute[$argument[0]] = $argument[1];
+            $newAttribute[$argument[0]] = is_callable($argument[1]) ? $argument[1]($this) : $argument[1];
             $attribute = $newAttribute;
         }
         $this->attributes = array_merge($this->attributes, $attribute);
@@ -50,7 +50,12 @@ abstract class Base
     {
         $attributes = $this->attributes;
         return implode(' ', array_map(function($attribute) use($attributes) {
-            return $this->xssClean($attribute) . '="' . $this->xssClean($attributes[$attribute]) . '"';
+            $isByPassedValue = false;
+            if (strpos($attribute, '!') !== false) {
+                $isByPassedValue = true;
+                $attribute = trim($attribute, '!');
+            }
+            return $this->xssClean($attribute) . '="' . ($isByPassedValue ? $attributes[$attribute] : $this->xssClean($attributes[$attribute])) . '"';
         }, array_keys($attributes)));
     }
 

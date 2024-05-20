@@ -25,5 +25,15 @@ class Search extends Form
                 'class' => 's-btn btn btn-default'
             ]);
         });
+
+       $this->setAttribute('action', function($component) {
+            $self = '';
+            
+            if ($component->isPlugin($self)) {
+                $self = $self . '?' . $_SERVER['QUERY_STRING'];
+            }
+
+            return $self;
+       });
     }
 }
