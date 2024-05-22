@@ -17,7 +17,7 @@ ob_start();
 <!DOCTYPE Html>
 <html>
     <head>
-        <title><?= $title ?></title>
+        <title><?= $title??'' ?></title>
         <link href="<?= $assetPath . '/assets/css/tailwind.min.css'?>" rel="stylesheet"/>
         <style>
 
