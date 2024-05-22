@@ -6,7 +6,7 @@ class MovingOldSetting extends Migration
 {
     function camelToSnake(string $input)
     {
-        if (preg_match_all('/[A-Z]/', $key, $match)) {
+        if (preg_match_all('/[A-Z]/', $input, $match)) {
             return str_replace($match[0], array_map(function($item) {
                 return '_' . strtolower($item);
             }, $match[0]), $input);
@@ -17,31 +17,34 @@ class MovingOldSetting extends Migration
 
     function up()
     {
-        $newConfig = require __DIR__ . '/../config/lbc.php';
-        $oldConfig = config('lbc_settings');
+        if (config('lbc') === null) {
+            $newConfig = require __DIR__ . '/../config/lbc.php';
+            $oldConfig = config('lbc_settings');
 
-        if ($oldConfig) {
-            foreach ($oldConfig as $key => $value) {
-                $newConfig['settings'][$this->ccamelToSnake($key)] = $value;
-            } 
-        }
-
-        foreach (['right','left','both'] as $type) {
-            $positionType = config('lbc_' . $type . 'Code');
-            if ($positionType) {
-                foreach ($positionType as $key => $value) {
-                    $key = $this->camelToSnake($key);
-                    $positionType[$key] = $value; 
-                }
-                $newConfig['saved_template_setting'][$type] = $positionType;
+            if ($oldConfig) {
+                foreach ($oldConfig as $key => $value) {
+                    $newConfig['settings'][$this->camelToSnake($key)] = $value;
+                } 
             }
-        }
 
-        if (config('lbc_color')) {
-            $newConfig['colors'] = config('lbc_color'); 
-        }
+            foreach (['right','left','both'] as $type) {
+                $positionType = config('lbc_' . $type . 'Code');
+                if ($positionType) {
+                    foreach ($positionType as $key => $value) {
+                        unset($positionType[$key]);
+                        $key = $this->camelToSnake($key);
+                        $positionType[$key] = $value; 
+                    }
+                    $newConfig['saved_template_setting'][$type] = $positionType;
+                }
+            }
 
-        Config::createOrUpdate('lbc', $newConfig);
+            if (config('lbc_color')) {
+                $newConfig['colors'] = config('lbc_color'); 
+            }
+
+            Config::createOrUpdate('lbc', $newConfig);
+        }
     }
 
     function down()

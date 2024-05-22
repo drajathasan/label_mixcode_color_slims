@@ -9,15 +9,35 @@ class Table extends Base
         'id' => 'dataList'
     ];
     protected array $rows = [];
-    protected array $columns = [];
+    protected array $headers = [];
 
-    public function __toString()
+    public function addHeader() {
+        if (func_num_args()) {
+            $this->headers = func_get_args();
+            $this->addRow($this->headers, [
+                'class' => 'dataListHeader',
+                'style' => 'font-weight: bold; cursor: pointer;'
+            ]);
+        }
+
+        return $this;
+    }
+
+    public function addRow(array $columns, array $options = [])
     {
-        $this->setSlot(createComponent('tr', [
-            'class' => 'dataListHeader',
-            'style' => 'font-weight: bold; cursor: pointer;'
-        ])->setSlot('<td>Hai</td>'));
+        if (count($columns) === count($this->headers)) {
+            foreach ($columns as $seq => $column) {
+                if (!$column instanceof Base) {
+                    $columns[$seq] = (new Td)->setSlot($column);
+                }
+            }
 
-        return parent::__toString();
+            $this->setSlot(
+                createComponent('tr', $options)
+                    ->setSlot(implode('', $columns))
+            );
+        }
+
+        return $this;
     }
 }

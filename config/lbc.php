@@ -3,7 +3,7 @@ return [
     'settings' => [
         'chunk' => 2,
         'template' => 'right',
-        'code_tyoe' => 'barcode',
+        'code_type' => 'barcode',
         'margin_page' => [
             'top' => '5mm',
             'right' => '5mm',
