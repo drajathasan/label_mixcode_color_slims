@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email <drajathasan20@gmail.com>
  * @create date 2021-06-28 06:37:56
- * @modify date 2024-05-21 05:38:18
+ * @modify date 2024-05-23 17:59:39
  * @license GPLv3
  */
 use SLiMS\DB;
@@ -41,8 +41,11 @@ $box
 $datagrid = new Datagrid;
 $datagrid->setTable('biblio as b', [
     ['mst_gmd as mg', ['mg.gmd_id','=','b.gmd_id'], 'inner join']
-])->addColumn('b.biblio_id as id','b.title as judul','publisher_year as "Tahun Terbit"');
-
-echo $datagrid;
+])
+->addColumn('b.biblio_id as id', $datagrid->cast('b.title as judul', function($datagrid, $original) {
+    return substr($original, 0,5);
+}),'publish_year as "Tahun Terbit"','mg.gmd_name')
+->setCriteria('b.biblio_id', fn() => ' < 2');
 
 echo $box;
+echo $datagrid;
