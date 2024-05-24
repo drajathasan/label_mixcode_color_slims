@@ -38,14 +38,24 @@ $box
     )
     ->setForm(new Search);
 
-$datagrid = new Datagrid;
+$datagrid = new Datagrid(name: 'Test');
 $datagrid->setTable('biblio as b', [
     ['mst_gmd as mg', ['mg.gmd_id','=','b.gmd_id'], 'inner join']
 ])
 ->addColumn('b.biblio_id as id', $datagrid->cast('b.title as judul', function($datagrid, $original) {
-    return substr($original, 0,5);
+    return $original;
 }),'publish_year as "Tahun Terbit"','mg.gmd_name')
-->setCriteria('b.biblio_id', fn() => ' < 2');
+->setCriteria([
+    ['!substring(b.title, 1,2)', fn() => ' = \'Su\''],
+    ['b.biblio_id', fn() => ' > 7']
+])
+->setSort('b.biblio_id');
+
+$datagrid->setColumnWidth([
+    'id' => '5%'
+]);
+
+// $datagrid->isEditable(false);
 
 echo $box;
 echo $datagrid;

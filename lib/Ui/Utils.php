@@ -5,7 +5,10 @@ trait Utils
 {
     public function xssClean(string|array $char):string|array
     {
-        $formatter = fn($chr) => str_replace(['\'', '"'], '', strip_tags($chr));
+        $formatter = function($chr) {
+            if (substr($chr, 0,1) == '!') return trim($chr,'!');
+            return str_replace(['\'', '"'], '', strip_tags($chr));
+        };
 
         if (is_string($char)) return $formatter($char);
 

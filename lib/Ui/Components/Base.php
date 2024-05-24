@@ -40,7 +40,10 @@ abstract class Base
             $newAttribute = [];
             $newAttribute[$argument[0]] = is_callable($argument[1]) ? $argument[1]($this) : $argument[1];
             $attribute = $newAttribute;
+        } else {
+            $attribute = $argument[0]??[];
         }
+
         $this->attributes = array_merge($this->attributes, $attribute);
 
         return $this;
