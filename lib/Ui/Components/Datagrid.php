@@ -21,6 +21,7 @@ class Datagrid extends Table
         'group' => [],
         'sort' => [],
         'unsortable_by_anchor' => [],
+        'invisible_column' => [],
         'limit' => 20,
         'editable' => true,
         'editable_form' => [
@@ -205,6 +206,12 @@ class Datagrid extends Table
             $this->properties['unsortable_by_anchor'][] = $column;
         }
 
+        return $this;
+    }
+
+    public function setInvisibleColumn(array $column)
+    {
+        $this->properties['invisible_column'] = $column;
         return $this;
     }
 
@@ -421,6 +428,10 @@ class Datagrid extends Table
         }
 
         foreach (array_keys($this->detail['record'][0]) as $key => $value) {
+            // hidden some column
+            if (in_array($value, $this->properties['invisible_column'])) continue;
+
+            // set header as clear text if it available in unsorted list
             if (in_array($value, $this->properties['unsortable_by_anchor'])) {
                 $header[] = $value;
                 continue;
@@ -465,11 +476,17 @@ class Datagrid extends Table
 
             // Value processing
             foreach ($value as $col => $val) {
+                // hidden some column
+                if (in_array($col, $this->properties['invisible_column'])) {
+                    unset($value[$col]);
+                    continue;
+                }
+
                 $td = new Td;
 
                 // modify column content
                 if (isset($this->properties['cast'][$col])) {
-                    $value[$col] = call_user_func_array($this->properties['cast'][$col], [$this, $val]);
+                    $value[$col] = call_user_func_array($this->properties['cast'][$col], [$this, $val, $value]);
                 }
 
                 // set default attribute
