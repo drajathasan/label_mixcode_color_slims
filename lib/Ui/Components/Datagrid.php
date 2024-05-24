@@ -22,7 +22,7 @@ class Datagrid extends Table
         'sort' => [],
         'unsortable_by_anchor' => [],
         'invisible_column' => [],
-        'limit' => 20,
+        'limit' => 30,
         'editable' => true,
         'editable_form' => [
             'id' => '',
@@ -32,6 +32,7 @@ class Datagrid extends Table
             'target' => 'submitExec',
         ],
         'cast' => [],
+        'on_search' => null,
         'connection' => 'SLiMS'
     ];
 
@@ -125,7 +126,7 @@ class Datagrid extends Table
         if (func_num_args() < 1) throw new Exception("Method addColumn need at least 1 argument!");
 
         $countableColumn = '';
-        $this->getOriginalColumnFromAlias(func_get_args()[0], $countableColumn);
+        $countableColumn = $this->getOriginalColumnFromAlias(func_get_args()[0])[0];
         $this->countable_column = $this->cleanChar($countableColumn);
         
         $this->columns = array_map(function($col) {
@@ -215,6 +216,12 @@ class Datagrid extends Table
         return $this;
     }
 
+    public function onSearch(Closure $callback) {
+        if (isset($_GET['keywords'])) {
+            $this->properties['on_search'] = $callback;
+        }
+    }
+
     /**
      * Make pagination data
      *
@@ -238,7 +245,9 @@ class Datagrid extends Table
         $parameters = [];
         foreach ($this->criteria as $column => $value) {
             if (is_callable($value)) {
-                $criteria[$column] = $this->aliasExtractor($column) . ' ' . $value($this, $parameters);
+                $customParams = [];
+                $criteria[$column] = $this->aliasExtractor($column) . ' ' . $value($this, $customParams);
+                $parameters = array_merge($parameters, $customParams);
                 continue;
             }
 
@@ -256,7 +265,7 @@ class Datagrid extends Table
      * @param string $input
      * @return void
      */
-    protected function cleanChar(string $input):string
+    public function cleanChar(string $input):string
     {
         return str_replace(['\'','"','`','--'], '', $input);
     }
@@ -264,7 +273,7 @@ class Datagrid extends Table
     /**
      * Encapsulate string between quote
      */
-    protected function encapsulate(string|array $input):string
+    public function encapsulate(string|array $input):string
     {
         // have alias?
         if (is_array($input)) {
@@ -281,10 +290,13 @@ class Datagrid extends Table
      * @param string $originalColumn
      * @return array
      */
-    protected function getOriginalColumnFromAlias(string $input, string &$originalColumn = ''):array
+    public function getOriginalColumnFromAlias(string $input, string &$originalColumn = ''):array
     {
         $extract = explode(' as ', str_replace(['AS','as','aS','As'], 'as', $input));
-        $originalColumn = $extract[0];
+
+        $isDotExists = false;
+        $dotAlias = $this->dotExtractor($input, $isDotExists);
+        $originalColumn = $isDotExists ? $dotAlias[1] : $extract[0];
 
         return $extract;
     }
@@ -296,7 +308,7 @@ class Datagrid extends Table
      * @param boolean $isAvailable
      * @return array|string
      */
-    protected function dotExtractor(string $input, bool &$isAvailable = false):array|string
+    public function dotExtractor(string $input, bool &$isAvailable = false):array|string
     {
         $isAvailable = is_numeric(strpos($input, '.'));
         return $isAvailable ? explode('.', trim($input)) : $input;
@@ -348,7 +360,7 @@ class Datagrid extends Table
         $url = explode('?', $this->properties['editable_form']['action']);
         if (isset($url[1])) {
             parse_str($url[1], $queries);
-            $url[1] = array_merge($queries, $additionalUrl);
+            $url[1] = http_build_query(array_merge($queries, $additionalUrl));
         } else {
             $url[1] = http_build_query(array_merge($_GET, $additionalUrl));
         }
@@ -370,6 +382,13 @@ class Datagrid extends Table
         
         if ($this->criteria) {
             $where = $this->getWhere();
+            if (is_callable($this->properties['on_search'])) {
+                $parameters = [];
+                $this->properties['on_search']($this);
+                $where = $this->getWhere();
+                $where['parameters'] = array_merge($where['parameters'], $parameters);
+            }
+
             $sql['criteria'] = 'where ' . $where['criteria'];
 
         }
@@ -388,7 +407,7 @@ class Datagrid extends Table
 
         $offset = (int)($_GET['page']??0);
         $sql['limit'] = 'limit ' . ((int)$this->limit) . ' offset ' . $offset;
-        
+
         // set main query
         $mainQuery = DB::query($rawMainQuery = implode(' ', $sql), $where['parameters']??[]);
         $this->detail['record'] = $mainQuery->toArray();
@@ -404,7 +423,12 @@ class Datagrid extends Table
         if (isset($sql['group'])) $totalSql['group'] = $sql['group'];
         
         $totalQuery = DB::query($rawTotalQuery = implode(' ', $totalSql), $where['parameters']??[]);
-        $this->detail['total'] = $totalQuery->first()['total'];
+        if ($totalQuery->count() > 1) {
+            $this->detail['total'] = $totalQuery->count();
+        } else {
+            $result = $totalQuery->first();
+            $this->detail['total'] = $result['total']??0;
+        }
         
         if (!empty($totalQueryError = $totalQuery->getError())) {
             throw new \Exception('Total query : ' . $totalQueryError . '. Raw Query : ' . $rawTotalQuery);
@@ -560,12 +584,16 @@ class Datagrid extends Table
             ])
         );
 
+        $pagiNation = (string)createComponent('td', ['class' => 'paging-area'])
+                        ->setSlot((string)Pagination::create($this->setUrl(), $this->detail['total'], $this->properties['limit']));
+
+
         return (string)createComponent('table', [
             'class' => 'datagrid-action-bar',
             'cellspacing' => 0,
             'cellpadding' => 5,
             'style' => 'width: 100%'
-        ])->setSlot($actionButton);
+        ])->setSlot($actionButton . $pagiNation);
     }
 
     public function debug()
@@ -610,9 +638,6 @@ class Datagrid extends Table
             $this->debug();
             echo $submitExec;
         });
-
-
-
 
         if ($this->detail['total'] > 0) {
             // Add column header

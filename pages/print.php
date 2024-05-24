@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email <drajathasan20@gmail.com>
  * @create date 2021-06-28 06:37:56
- * @modify date 2024-05-23 17:59:39
+ * @modify date 2024-05-24 15:12:39
  * @license GPLv3
  */
 use SLiMS\DB;
@@ -39,16 +39,33 @@ $box
     ->setForm(new Search);
 
 $datagrid = new Datagrid(name: 'Test');
-$datagrid->setTable('search_biblio')
-->addColumn('biblio_id as id', $datagrid->cast('title as judul', function($datagrid, $original, $data) {
-    return <<<HTML
-    <strong class="d-block w-100">{$original}</strong>
-    <small class="text-muted">{$data['Tahun Terbit']}</small>
-    HTML;
-}),'publish_year as "Tahun Terbit"')
-->setSort('biblio_id')->setInvisibleColumn(['Tahun Terbit']);
 
-// $datagrid->isEditable(false);
+$title = $datagrid->cast('b.title', function($datagrid, $original, $data) {
+    $thumbUrl = SWB . 'lib/minigalnano/createthumb.php?filename=images/docs/' . $data['image'] . '&width=30&height=40px';
+    return <<<HTML
+    <div class="d-flex flex-row">
+        <div>
+            <strong class="d-block">{$original}</strong>
+        </div>
+    </div>
+    HTML;
+});
+
+$datagrid
+    ->setTable('biblio as b', joins: [
+        ['item as i', ['i.biblio_id','=','b.biblio_id'], 'left join']
+    ])
+    ->addColumn('b.biblio_id', $title,'b.isbn_issn','!count(i.item_code) as copy','b.image','b.last_update')
+    ->setCriteria('i.biblio_id', fn() => ' is not null')
+    ->setGroup('b.biblio_id')
+    ->setInvisibleColumn(['image','author'])
+    ->onSearch(function($datagrid) {
+        $datagrid->setCriteria('!(match (b.title)', function($datagrid, &$parameter) {
+            $parameter = [$_GET['keywords']??''];
+
+            return ' against (? in boolean mode))';
+        });
+    });
 
 echo $box;
 echo $datagrid;
