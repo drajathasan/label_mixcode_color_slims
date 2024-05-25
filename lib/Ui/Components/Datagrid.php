@@ -42,6 +42,8 @@ class Datagrid extends Table
         ],
         'cast' => [],
         'on_search' => null,
+        'on_fetch' => null,
+        'on_cached' => null,
         'connection' => 'SLiMS'
     ];
 
@@ -130,7 +132,7 @@ class Datagrid extends Table
      *
      * @return Datagrid
      */
-    public function addColumn():Datagrid
+    public function setColumn():Datagrid
     {
         if (func_num_args() < 1) throw new Exception("Method addColumn need at least 1 argument!");
 
@@ -398,9 +400,7 @@ class Datagrid extends Table
         $url = explode('?', $this->properties['editable_form']['action']);
         $overideArray = function($source, $new) {
             foreach ($new as $key => $value) {
-                if (isset($source[$key])) {
-                    $source[$key] = $value;
-                }
+                $source[$key] = $value;
             }
 
             return $source;
@@ -425,7 +425,7 @@ class Datagrid extends Table
      *
      * @return void
      */
-    private function getData():void
+    protected function getData(bool $withLimit = true)
     {
         // column processing
         $columns = implode(',', $this->columns);
@@ -463,12 +463,19 @@ class Datagrid extends Table
         }
 
         // pagination
-        $offset = ((int)($_GET['page']??0) * $this->limit / 2);
-        if (isset($_GET['keywords']) && !empty($_GET['keywords'])) $offset = 0;
-        $sql['limit'] = 'limit ' . ((int)$this->limit) . ' offset ' . $offset;
+        if ($withLimit) {
+            $offset = (((int)($_GET['page']??1) - 1) * $this->limit);
+            // if (isset($_GET['keywords']) && !empty($_GET['keywords'])) $offset = 0;
+            $sql['limit'] = 'limit ' . ((int)$this->limit) . ' offset ' . $offset;
+        }
 
         // set main query
         $mainQuery = DB::query($rawMainQuery = implode(' ', $sql), $where['parameters']??[]);
+
+        if (!$withLimit) {
+            return $mainQuery;
+        }
+
         $this->detail['record'] = $mainQuery->toArray();
 
         if (!empty($mainQueryError = $mainQuery->getError())) {
