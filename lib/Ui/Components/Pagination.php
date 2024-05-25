@@ -46,9 +46,17 @@ class Pagination extends Base
 
         $firstPage = ($currentPage - 2) < 1 ? 1 : ($currentPage - 2);
         $lastPage = ($currentPage + 2) < $this->properties['total_page'] ? $currentPage + 2 : $this->properties['total_page'];
+
+        if ($firstPage == 1) $lastPage = 5;
+
         $range = range($firstPage, $lastPage);
 
-        foreach ($range as $key => $value) {
+        foreach ($range as $value) {
+            if ($value == $currentPage) {
+                $page[] = createComponent('b')->setSlot($value);
+                continue;
+            }
+
             $page[] = createComponent('a', [
                 'href' => $this->properties['base_url'] . '&page=' . $value
             ])->setSlot($value);
@@ -59,6 +67,7 @@ class Pagination extends Base
                 'class' => 'first_link',
                 'href' => $this->properties['base_url'] . '&page=' . ($currentPage + 1)
             ])->setSlot(__('Next'));
+            
             $page[] = createComponent('a', [
                 'class' => 'first_link',
                 'href' => $this->properties['base_url'] . '&page=' . ($this->properties['total_page'])
