@@ -30,7 +30,7 @@ class Search extends Form
             $self = '';
             
             if ($component->isPlugin($self)) {
-                $self = $self . '?' . $_SERVER['QUERY_STRING'];
+                $self = $component->getSelfUrl();
             }
 
             return $self;

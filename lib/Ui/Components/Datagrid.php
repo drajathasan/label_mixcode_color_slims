@@ -33,7 +33,12 @@ class Datagrid extends Table
             'name' => '',
             'action' => '',
             'method' => 'POST',
-            'target' => 'submitExec',
+            'target' => 'submitExec'
+        ],
+        'bar' => [
+            'question' => '',
+            'class' => 's-btn btn btn-danger',
+            'value' => ''
         ],
         'cast' => [],
         'on_search' => null,
@@ -241,7 +246,7 @@ class Datagrid extends Table
      */
     public function onSearch(Closure $callback, string $searchQuery = 'keywords'):Datagrid
     {
-        if (isset($_GET[$searchQuery])) {
+        if (isset($_GET[$searchQuery]) && !empty($_GET[$searchQuery])) {
             $this->properties['on_search'] = $callback;
         }
 
@@ -391,15 +396,24 @@ class Datagrid extends Table
     {
         // seperate querystring and self
         $url = explode('?', $this->properties['editable_form']['action']);
+        $overideArray = function($source, $new) {
+            foreach ($new as $key => $value) {
+                if (isset($source[$key])) {
+                    $source[$key] = $value;
+                }
+            }
+
+            return $source;
+        };
 
         // had queries?
         if (isset($url[1])) {
             parse_str($url[1], $queries); // convert http query to array
             // merging and turn it back to http query format
-            $url[1] = http_build_query(array_merge($queries, $additionalUrl));
+            $url[1] = http_build_query($overideArray($queries, $additionalUrl));
         } else {
             // not http query? make it from additional url and $_GET
-            $url[1] = http_build_query(array_merge($_GET, $additionalUrl));
+            $url[1] = http_build_query($overideArray($_GET, $additionalUrl));
         }
 
         // as string with queries
@@ -450,6 +464,7 @@ class Datagrid extends Table
 
         // pagination
         $offset = ((int)($_GET['page']??0) * $this->limit / 2);
+        if (isset($_GET['keywords']) && !empty($_GET['keywords'])) $offset = 0;
         $sql['limit'] = 'limit ' . ((int)$this->limit) . ' offset ' . $offset;
 
         // set main query
@@ -462,20 +477,13 @@ class Datagrid extends Table
 
         // set total query
         $totalSql = [];
-        $totalSql['select'] = 'select count(' . $this->countable_column . ') as total from ' . $this->table;
+        $totalSql['select'] = 'select count(distinct ' . $this->countable_column . ') as total from ' . $this->table;
         if (isset($sql['criteria'])) $totalSql['criteria'] = $sql['criteria'];
-        if (isset($sql['group'])) $totalSql['group'] = $sql['group'];
         
         $totalQuery = DB::query($rawTotalQuery = implode(' ', $totalSql), $where['parameters']??[]);
 
-        // If grouping available in main query,
-        // datagrid will counting data from how many data in result
-        if ($totalQuery->count() > 1) {
-            $this->detail['total'] = $totalQuery->count();
-        } else {
-            $result = $totalQuery->first();
-            $this->detail['total'] = $result['total']??0;
-        }
+        $result = $totalQuery->first();
+        $this->detail['total'] = $result['total']??0;
         
         if (!empty($totalQueryError = $totalQuery->getError())) {
             throw new \Exception('Total query : ' . $totalQueryError . '. Raw Query : ' . $rawTotalQuery);
@@ -498,10 +506,14 @@ class Datagrid extends Table
         $header = [];
 
         if ($this->editable) {
-            // deleted 
-            $header[] = __('DELETE');
-            // edita
-            $header[] = __('EDIT');
+            if (!isset($this->properties['queueable'])) {
+                // deleted 
+                $header[] = __('DELETE');
+                // edita
+                $header[] = __('EDIT');
+            } else {
+                $header[] = __('ADD');
+            }
         }
 
         foreach (array_keys($this->detail['record'][0]??[]) as $key => $value) {
@@ -613,12 +625,14 @@ class Datagrid extends Table
                 ]));
 
                 // edit button
-                $editableValue[] = createComponent('td', $tdOption)->setSlot(createComponent('a', [
-                    'class' => 'editLink',
-                    'href' => $this->setUrl($editableParam = ['itemID' => $originalValue[0], 'detail' => 'true']),
-                    'postdata' => http_build_query($editableParam),
-                    'title' => __('Edit')
-                ])->setSlot(''));
+                if (!isset($this->properties['queueable'])) {
+                    $editableValue[] = createComponent('td', $tdOption)->setSlot(createComponent('a', [
+                        'class' => 'editLink',
+                        'href' => $this->setUrl($editableParam = ['itemID' => $originalValue[0], 'detail' => 'true']),
+                        'postdata' => http_build_query($editableParam),
+                        'title' => __('Edit')
+                    ])->setSlot(''));
+                }
 
                 // remove first column
                 unset($columns[0]);
@@ -642,12 +656,24 @@ class Datagrid extends Table
      */
     public function setActionBar():string
     {
+        $question = $this->properties['bar']['question'];
+        $buttonClass = $this->properties['bar']['class'];
+        $buttonValue = $this->properties['bar']['value'];
+
+        if (empty($question)) {
+            $question = __('Are You Sure Want to DELETE Selected Data?');
+        }
+
+        if (empty($buttonValue)) {
+            $buttonValue = __('Delete Selected Data');
+        }
+        
         $actionButton = (string)createComponent('td')->setSlot(
             (string)createComponent('input', [
-                'class' => 's-btn btn btn-danger',
+                'class' => $buttonClass,
                 'type' => 'button',
-                'onclick' => '!chboxFormSubmit(\'' . $this->properties['editable_form']['name'] . '\', \'' . __('Are You Sure Want to DELETE Selected Data?') . '\', 1)',
-                'value' => __('Delete Selected Data')
+                'onclick' => '!chboxFormSubmit(\'' . $this->properties['editable_form']['name'] . '\', \'' . $question . '\', 1)',
+                'value' => $buttonValue
             ]) . 
             (string)createComponent('input', [
                 'class' => 'check-all button btn btn-default',
@@ -661,8 +687,11 @@ class Datagrid extends Table
             ])
         );
 
-        $pagiNation = (string)createComponent('td', ['class' => 'paging-area'])
+        $pagiNation = '';
+        if ($this->detail['total'] > $this->properties['limit']) {
+            $pagiNation = (string)createComponent('td', ['class' => 'paging-area'])
                         ->setSlot((string)Pagination::create($this->setUrl(), $this->detail['total'], $this->properties['limit']));
+        }
 
 
         return (string)createComponent('table', [
@@ -678,9 +707,15 @@ class Datagrid extends Table
      *
      * @return void
      */
-    public function debug()
+    public function debug(string $somethingToAdd = '')
     {
-        dump($this->properties['sql']);
+        // For development process
+        ob_start();
+        debugBox(function() use($somethingToAdd) {
+            dump($this->properties['sql']);
+            echo $somethingToAdd;
+        });
+        return ob_get_clean();
     }
 
     /**
@@ -720,13 +755,7 @@ class Datagrid extends Table
             'class' => isDev() ? 'd-block' : 'd-none'
         ])->setSlot('');
 
-        // For development process
-        ob_start();
-        debugBox(function() use($submitExec) {
-            $this->debug();
-            echo $submitExec;
-        });
-        $debugBox = ob_get_clean();
+        $debug = $this->debug($submitExec);
 
         if ($this->detail['total'] > 0) {
             // Add column header
@@ -736,7 +765,7 @@ class Datagrid extends Table
             $this->setBody();
 
             // rendering object to html
-            $output = parent::__toString();
+            $datagrid = parent::__toString();
 
             // set form
             if ($this->editable) {
@@ -744,10 +773,10 @@ class Datagrid extends Table
                 
                 $actionBar = $this->setActionBar();
                 $datagrid = createComponent('form', $this->properties['editable_form'])
-                                ->setSlot($debugBox . $actionBar . $output . $actionBar);
-
-                $output = (!isDev() ? $submitExec : '') . ((string)$datagrid);
+                                ->setSlot($actionBar . $datagrid . $actionBar);
             }
+
+            $output = (!isDev() ? $submitExec : $debug) . ((string)$datagrid);
         } else {
             // No Data
             $this->setSlot(
@@ -760,7 +789,7 @@ class Datagrid extends Table
                 ])->setSlot(__('No Data')))
             );
 
-            $output = $debugBox . parent::__toString();
+            $output = $debug . parent::__toString();
         }
 
         return $output;

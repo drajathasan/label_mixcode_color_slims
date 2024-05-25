@@ -38,6 +38,8 @@ trait Utils
             $query[$key] = $value;
         }
 
+        unset($query['page']);
+
         return trim($self . ($query ? '?' . http_build_query($query) : ''));
     }
 }
