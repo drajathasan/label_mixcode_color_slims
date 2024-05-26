@@ -10,7 +10,7 @@
  use SLiMS\Plugins;
 
 // require autoload
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/dev/ui/vendor/autoload.php';
 
 // registering menus
 Plugins::getInstance()

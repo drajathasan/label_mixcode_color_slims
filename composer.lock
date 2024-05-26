@@ -4,12 +4,55 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1448efec879d86c402901dfef5a78a08",
-    "packages": [],
+    "content-hash": "568e73dd768163b03dfef480019a5c93",
+    "packages": [
+        {
+            "name": "slims/ui",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/goslims/ui.git",
+                "reference": "9700c30ba53f0abc2d960aad59a5bc33b5754fb3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/goslims/ui/zipball/9700c30ba53f0abc2d960aad59a5bc33b5754fb3",
+                "reference": "9700c30ba53f0abc2d960aad59a5bc33b5754fb3",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "helpers.php"
+                ],
+                "psr-4": {
+                    "SLiMS\\Ui\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Drajat Hasan",
+                    "email": "drajathasan20@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/goslims/ui/issues",
+                "source": "https://github.com/goslims/ui/tree/main"
+            },
+            "time": "2024-05-26T08:19:08+00:00"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "slims/ui": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
