@@ -47,7 +47,7 @@ class Pagination extends Base
         $firstPage = ($currentPage - 2) < 1 ? 1 : ($currentPage - 2);
         $lastPage = ($currentPage + 2) < $this->properties['total_page'] ? $currentPage + 2 : $this->properties['total_page'];
 
-        if ($firstPage == 1) $lastPage = 5;
+        if ($firstPage == 1 && ($this->properties['total_page'] > 5)) $lastPage = 5;
 
         $range = range($firstPage, $lastPage);
 

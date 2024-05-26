@@ -26,6 +26,30 @@ class Reportgrid extends Datagrid
         $this->filename = $name;
         $this->properties['editable'] = false;
         $this->properties['with_spreadsheet_export'] = true;
+
+        // css
+        $bootstrap = SWB . 'css/bootstrap.min.css';
+        $css = SWB . 'css/core.css';
+        $templateCss = SWB.'admin/' . config('admin_template.css');
+
+        $this->properties['stylesheet_url'] = <<<HTML
+        <link href="{$bootstrap}" rel="stylesheet"/>
+        <link href="{$css}" rel="stylesheet"/>
+        <link href="{$templateCss}" rel="stylesheet"/>
+        <style>
+            @media print {
+                .s-print__page-info, .debug, .paging-area {
+                    display:none;
+                }
+            }
+        </style>
+        HTML;
+
+        // js
+        $js = SWB . 'js/jquery.js';
+        $this->properties['js_url'] = <<<HTML
+        <script src="{$js}"></script>
+        HTML;
     }
 
     /**
@@ -105,12 +129,31 @@ class Reportgrid extends Datagrid
         ])->setSlot($label . $buttonPrint . $buttonExport);
     }
 
+    protected function setStyleSheetIfInIframe(string $content)
+    {
+        if ($_SERVER['HTTP_SEC_FETCH_DEST'] === 'iframe') {
+            return <<<HTML
+            <!DOCTYPE Html>
+            <html>
+                <title>{$this->filename}</title>
+                {$this->stylesheet_url}
+                {$this->js_url}
+                <body>
+                    {$content}
+                </body>
+            </html>
+            HTML;
+        }
+
+        return $content;
+    }
+
     public function __toString()
     {
         $report = parent::__toString();
         $printArea = $this->setPrintAction();
 
-        return $printArea . $report;
+        return $this->setStyleSheetIfInIframe($printArea . $report);
 
     }
 }

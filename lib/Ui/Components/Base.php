@@ -3,6 +3,7 @@ namespace Mixcode\Ui\Components;
 
 use Closure;
 use Mixcode\Ui\Utils;
+use SLiMS\Plugins;
 
 abstract class Base
 {
@@ -105,6 +106,59 @@ abstract class Base
         return $this;
     }
 
+    public function setHiddenInput(string $name, string $value)
+    {
+        if (!isset($this->properties['hidden_input'])) $this->properties['hidden_input'] = [];
+        $this->properties['hidden_input'][$name] = $value;
+        $this->setSlot((string)createComponent('input', ['name' => $name, 'type' => 'hidden', 'value' => $value])->setSlot(''));
+        return $this;
+    }
+
+    public function registerEvent(string $eventName, Closure $callback, string $evenType = '')
+    {
+        $argument = !empty($eventType) ? [$callback, $eventType] : [$callback];
+        $this->properties['event']['on_' . strtolower($eventName)] = $argument;
+        $this->properties['custom_event_to_call'][] = strtolower($eventName);
+        return $this;
+    }
+
+    public function callEvent(string|array $eventNameOrNames)
+    {
+        if (is_string($eventNameOrNames)) $eventNameOrNames = [$eventNameOrNames];
+
+        if ($this->properties['custom_event_to_call']) {
+            $eventNameOrNames = array_merge($this->properties['custom_event_to_call'], $eventNameOrNames);
+        }
+
+        $className = strtolower($class = (new \ReflectionClass($this))->getShortName());
+
+        foreach ($eventNameOrNames as $eventName) {
+            if (isset($this->properties['event']['on_' . ($eventType = strtolower($eventName))])) {
+                $event = $this->properties['event']['on_' . $eventType];
+
+                if (isset($event[1])) {
+                    list($event, $eventType) = $event;
+                } else { $event = $event[0]; }
+
+                // validated some request
+                if (!isset($_REQUEST[$eventType])) continue;
+
+                $bypassDefaultEvent = false;
+                Plugins::run($className . '_on_' . $eventType, [$this, &$bypassDefaultEvent]);
+
+                if (!$bypassDefaultEvent) call_user_func_array($event, [$this]);
+            }
+        }
+    }
+
+    public function __call($method, $argument)
+    {
+        if (substr($method, 0,2) === 'on') {
+            $eventName = strtolower(substr_replace($method, 'on_', 0,2));
+            $this->properties['event'][$eventName] = $argument;
+        }
+    }
+
     public function __toString()
     {
         $tag = trim($this->xssClean($this->tag));
@@ -117,7 +171,7 @@ abstract class Base
             $html .= $this->generateSlot();
             $html .= '</' . $tag . '>';
         } else {
-            $html = in_array($tag, $this->voidElements) ? $html . '/>' : '</' . $tag . '>';
+            $html = in_array($tag, $this->voidElements) ? $html . '/>' : $html . '</' . $tag . '>';
         }
 
         return $html;

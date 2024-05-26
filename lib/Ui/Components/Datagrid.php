@@ -38,12 +38,18 @@ class Datagrid extends Table
         'bar' => [
             'question' => '',
             'class' => 's-btn btn btn-danger',
-            'value' => ''
+            'value' => '',
+            'name' => 'delete'
         ],
         'cast' => [],
-        'on_search' => null,
-        'on_fetch' => null,
-        'on_cached' => null,
+        'event' => [
+            'on_search' => null,
+            'on_fetch' => null,
+            'on_cached' => null,
+            'on_edit' => null,
+            'on_delete' => null
+        ],
+        'custom_event_to_call' => [],
         'connection' => 'SLiMS'
     ];
 
@@ -249,7 +255,7 @@ class Datagrid extends Table
     public function onSearch(Closure $callback, string $searchQuery = 'keywords'):Datagrid
     {
         if (isset($_GET[$searchQuery]) && !empty($_GET[$searchQuery])) {
-            $this->properties['on_search'] = $callback;
+            $this->properties['event']['on_search'] = $callback;
         }
 
         return $this;
@@ -437,9 +443,9 @@ class Datagrid extends Table
         // Where clause
         if ($this->criteria) {
             $where = $this->getWhere();
-            if (is_callable($this->properties['on_search'])) {
+            if (is_callable($this->properties['event']['on_search'])) {
                 $parameters = [];
-                $this->properties['on_search']($this);
+                $this->properties['event']['on_search']($this);
                 $where = $this->getWhere();
                 $where['parameters'] = array_merge($where['parameters'], $parameters);
             }
@@ -635,7 +641,7 @@ class Datagrid extends Table
                 if (!isset($this->properties['queueable'])) {
                     $editableValue[] = createComponent('td', $tdOption)->setSlot(createComponent('a', [
                         'class' => 'editLink',
-                        'href' => $this->setUrl($editableParam = ['itemID' => $originalValue[0], 'detail' => 'true']),
+                        'href' => $this->setUrl($editableParam = ['itemID' => $originalValue[0], 'edit' => 'true']),
                         'postdata' => http_build_query($editableParam),
                         'title' => __('Edit')
                     ])->setSlot(''));
@@ -650,6 +656,7 @@ class Datagrid extends Table
 
             // Add column to row
             $this->addRow($columns, $options);
+            unset($column);
         }
     }
 
@@ -666,6 +673,7 @@ class Datagrid extends Table
         $question = $this->properties['bar']['question'];
         $buttonClass = $this->properties['bar']['class'];
         $buttonValue = $this->properties['bar']['value'];
+        $buttonName = $this->properties['bar']['name'];
 
         if (empty($question)) {
             $question = __('Are You Sure Want to DELETE Selected Data?');
@@ -674,8 +682,17 @@ class Datagrid extends Table
         if (empty($buttonValue)) {
             $buttonValue = __('Delete Selected Data');
         }
+
+        if (empty($buttonName)) {
+            $buttonName = 'delete';
+        }
         
         $actionButton = (string)createComponent('td')->setSlot(
+            (string)createComponent('input', [
+                'type' => 'hidden',
+                'name' => $buttonName,
+                'value' => 'yes'
+            ]) .
             (string)createComponent('input', [
                 'class' => $buttonClass,
                 'type' => 'button',
@@ -719,7 +736,7 @@ class Datagrid extends Table
         // For development process
         ob_start();
         debugBox(function() use($somethingToAdd) {
-            dump($this->properties['sql']);
+            dump($this->properties['sql'], $this->detail);
             echo $somethingToAdd;
         });
         return ob_get_clean();
@@ -754,6 +771,8 @@ class Datagrid extends Table
     {
         // Fetching data from database
         $this->getData();
+
+        $this->callEvent(['delete','edit']);
 
         // set iframe to catch from result
         $submitExec = createComponent('iframe', [
